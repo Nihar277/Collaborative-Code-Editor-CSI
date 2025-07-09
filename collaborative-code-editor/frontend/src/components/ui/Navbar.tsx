@@ -1,3 +1,4 @@
+"use client";
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 
@@ -12,7 +13,7 @@ export default function Navbar() {
       <div className="flex items-center gap-4">
         {session?.user ? (
           <>
-            <span className="text-sm">{session.user.username || session.user.email}</span>
+            <span className="text-sm">{session.user.name || session.user.email}</span>
             <button
               className="px-3 py-1 bg-gray-200 rounded text-sm"
               onClick={() => signOut({ callbackUrl: '/auth/signin' })}

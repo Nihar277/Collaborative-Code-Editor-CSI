@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import Document from '../models/Document';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
@@ -6,11 +6,11 @@ import User from '../models/User';
 const router = express.Router();
 
 // Middleware to authenticate JWT
-function authenticateToken(req, res, next) {
+function authenticateToken(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
   if (!token) return res.sendStatus(401);
-  jwt.verify(token, process.env.JWT_SECRET || 'secret', (err, user) => {
+  jwt.verify(token, process.env.JWT_SECRET || 'secret', (err: any, user: any) => {
     if (err) return res.sendStatus(403);
     req.user = user;
     next();
@@ -18,7 +18,7 @@ function authenticateToken(req, res, next) {
 }
 
 // List all documents for the authenticated user
-router.get('/', authenticateToken, async (req, res) => {
+router.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
     const docs = await Document.find({
       $or: [
@@ -33,7 +33,7 @@ router.get('/', authenticateToken, async (req, res) => {
 });
 
 // Create a new document
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/', authenticateToken, async (req: Request, res: Response) => {
   try {
     const { title, content, language, isPublic } = req.body;
     const doc = new Document({
@@ -53,7 +53,7 @@ router.post('/', authenticateToken, async (req, res) => {
 });
 
 // Get a document by ID
-router.get('/:id', authenticateToken, async (req, res) => {
+router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const doc = await Document.findById(req.params.id);
     if (!doc) return res.status(404).json({ message: 'Document not found' });
@@ -64,7 +64,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
 });
 
 // Update a document
-router.put('/:id', authenticateToken, async (req, res) => {
+router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const doc = await Document.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!doc) return res.status(404).json({ message: 'Document not found' });
@@ -75,7 +75,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
 });
 
 // Delete a document
-router.delete('/:id', authenticateToken, async (req, res) => {
+router.delete('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const doc = await Document.findByIdAndDelete(req.params.id);
     if (!doc) return res.status(404).json({ message: 'Document not found' });
@@ -86,7 +86,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
 });
 
 // Get document versions
-router.get('/:id/versions', authenticateToken, async (req, res) => {
+router.get('/:id/versions', authenticateToken, async (req: Request, res: Response) => {
   try {
     const doc = await Document.findById(req.params.id);
     if (!doc) return res.status(404).json({ message: 'Document not found' });
@@ -97,7 +97,7 @@ router.get('/:id/versions', authenticateToken, async (req, res) => {
 });
 
 // Save a new version
-router.post('/:id/versions', authenticateToken, async (req, res) => {
+router.post('/:id/versions', authenticateToken, async (req: Request, res: Response) => {
   try {
     const { content, message } = req.body;
     const doc = await Document.findById(req.params.id);

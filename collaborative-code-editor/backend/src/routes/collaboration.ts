@@ -6,11 +6,13 @@ import jwt from 'jsonwebtoken';
 const router = express.Router();
 
 // Middleware to authenticate JWT
-function authenticateToken(req, res, next) {
+import { Request, Response, NextFunction } from 'express';
+
+function authenticateToken(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
   if (!token) return res.sendStatus(401);
-  jwt.verify(token, process.env.JWT_SECRET || 'secret', (err, user) => {
+  jwt.verify(token, process.env.JWT_SECRET || 'secret', (err: any, user: any) => {
     if (err) return res.sendStatus(403);
     req.user = user;
     next();
@@ -26,11 +28,11 @@ router.post('/:id/invite', authenticateToken, async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: 'User not found' });
     // Prevent duplicate
-    if (doc.collaborators.some(c => c.userId.toString() === user._id.toString())) {
+    if (doc.collaborators.some(c => c.userId.toString() === user.id.toString())) {
       return res.status(409).json({ message: 'User already a collaborator' });
     }
     doc.collaborators.push({
-      userId: user._id,
+      userId: user.id,
       permission: permission || 'editor',
       joinedAt: new Date(),
     });
