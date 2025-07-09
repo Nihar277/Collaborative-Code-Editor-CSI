@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useRef, useState } from 'react';
 import { getSocket } from '@/lib/socket';
 import { useChatStore, useUserStore } from '@/lib/store';
