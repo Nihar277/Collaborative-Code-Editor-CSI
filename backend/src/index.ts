@@ -7,9 +7,19 @@ import collaborationRoutes from './routes/collaboration';
 import chatRoutes from './routes/chat';
 import http from 'http';
 import { initSocket } from './socket';
+import mongoose from 'mongoose';
 
 // Load environment variables
 dotenv.config();
+
+// Connect to MongoDB
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/csi-code-editor';
+mongoose.connect(MONGO_URI)
+  .then(() => console.log('MongoDB connected'))
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
+  });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -23,8 +33,8 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/documents', documentRoutes);
-app.use('/api/documents', collaborationRoutes);
-app.use('/api/documents', chatRoutes);
+app.use('/api/collaboration', collaborationRoutes);
+app.use('/api/chat', chatRoutes);
 
 const server = http.createServer(app);
 initSocket(server);
