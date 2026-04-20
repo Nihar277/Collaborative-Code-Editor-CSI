@@ -2,6 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth';
+import documentRoutes from './routes/documents';
+import chatRoutes from './routes/chat';
+import collaborationRoutes from './routes/collaboration';
 import http from 'http';
 import mongoose from 'mongoose';
 
@@ -46,13 +49,19 @@ app.get('/', (req, res) => {
     message: 'Collaborative Code Editor API Running',
     version: '1.0.0',
     endpoints: {
-      auth: '/api/auth'
+      auth: '/api/auth',
+      documents: '/api/documents',
+      chat: '/api/chat',
+      collaboration: '/api/collaboration'
     }
   });
 });
 
-// API routes - only auth for now
+// API routes
 app.use('/api/auth', authRoutes);
+app.use('/api/documents', documentRoutes);
+app.use('/api/chat', chatRoutes);
+app.use('/api/collaboration', collaborationRoutes);
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -83,6 +92,9 @@ const startServer = async () => {
       console.log(`📱 Frontend URL: ${process.env.CORS_ORIGIN || 'http://localhost:3000'}`);
       console.log(`🔗 API URL: http://localhost:${PORT}`);
       console.log(`🔐 Auth endpoint: /api/auth`);
+      console.log(`📄 Documents endpoint: /api/documents`);
+      console.log(`💬 Chat endpoint: /api/chat`);
+      console.log(`🤝 Collaboration endpoint: /api/collaboration`);
     });
     
   } catch (error) {
